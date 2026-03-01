@@ -8,7 +8,7 @@ import asyncio
 from playwright.async_api import async_playwright
 
 SEEDS = range(36, 46)
-BASE_URL = "https://sanand0.github.io/tdsdata/table_sum/index.html"
+BASE_URL = "https://sanand0.github.io/tdsdata/js_table/"
 OUTPUT_FILE = "results.txt"
 
 async def scrape_and_sum_tables():
