@@ -1,0 +1,36 @@
+name: Scrape Table Sums with Playwright
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  scrape-tables:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install playwright
+        playwright install chromium
+    
+    - name: Run Playwright scraper with email 24f2003684@ds.study.iitm.ac.in
+      run: |
+        python playwright_scraper.py
+    
+    - name: Upload results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: scrape-results
+        path: results.txt
