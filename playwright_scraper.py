@@ -1,7 +1,7 @@
 """
-GitHub Action Playwright scraper
-Scrapes all tables from Seed 36-45 pages and sums all numeric values.
-Writes the total sum to results.txt for GitHub Action artifact upload.
+Playwright scraper for DataDash QA case study
+Scrapes tables from Seed 36-45 pages and sums all numeric values.
+Writes the total to results.txt and prints it in logs.
 """
 
 import asyncio
@@ -25,21 +25,22 @@ async def scrape_and_sum_tables():
 
                 tables = await page.query_selector_all("table")
 
+                seed_total = 0
                 for table in tables:
                     cells = await table.query_selector_all("td, th")
                     for cell in cells:
-                        text = (await cell.text_content()).strip()
-                        text = text.replace(",", "")  # remove commas
+                        text = (await cell.text_content()).strip().replace(",", "")
                         try:
                             number = float(text)
+                            seed_total += number
                             total_sum += number
                         except ValueError:
-                            continue  # skip non-numeric cells
+                            continue
 
-                print(f"Seed {seed} processed successfully")
+                print(f"Seed {seed} subtotal: {int(seed_total)}")
 
             except Exception as e:
-                print(f"Error processing seed {seed}: {e}")
+                print(f"Error processing Seed {seed}: {e}")
 
         await browser.close()
     return total_sum
@@ -47,9 +48,11 @@ async def scrape_and_sum_tables():
 async def main():
     total = await scrape_and_sum_tables()
     total_int = int(total)
+
+    # Print clearly for GitHub Action checker
     print(f"\nTOTAL_SUM={total_int}")
 
-    # Write result to file for GitHub Action artifact
+    # Save to results.txt for artifact upload
     with open(OUTPUT_FILE, "w") as f:
         f.write(f"TOTAL_SUM={total_int}\n")
 
